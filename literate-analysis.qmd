@@ -1,0 +1,59 @@
+---
+title: "Literate Analysis"
+author: "Karrin"
+format: html
+editor: visual
+---
+
+## Introduction
+
+### About this data
+
+This data set contains North Pole Environmental Observatory Bottle Chemistry data. This data set includes diverse measurements of seawater chemistry along with supporting conductivity, temperature, and depth (CTD) data from the Arctic Ocean near the North Pole. Measurements were taken from sea ice platforms each April or May from 2000-2014. Investigators used a CTD-O2 system to measure seawater conductivity, temperature, depth, and dissolved oxygen content, and collected Niskin bottle samples for measurements of salinity, oxygen isotopes composition, total alkalinity, and concentrations of phosphate, silicic acid, nitrate, nitrite, ammonium, and barium. The available in-situ dissolved oxygen measurements were collected beginning in 2002. Beginning with the 2007 deployment, an in-situ ultraviolet spectrophotometer (ISUS) was used to measure nitrate concentrations in the water column. The North Pole Environmental Observatory (NPEO) is a year-round, scientific observatory, deploying various instruments each April in order to learn how the world's northernmost sea helps regulate global climate. Supported by repeat hydrographic profiles, it includes a set of unmanned scientific platforms that record oceanographic, cryospheric, and atmospheric data throughout the year. More information about the project is available at the \[project web site:\](http://psc.apl.washington.edu/northpol)
+
+This data was downloaded from [**North Pole Environmental Observatory Bottle Chemistry**](https://doi.org/10.18739/A25T3FZ8X)
+
+### Set up
+
+```{r}
+
+library(readr)
+```
+
+### Read in data
+
+```{r}
+#| warning: false
+#| message: false
+
+bg_chem <- read_csv("data/BGchem2008data.csv")
+
+
+```
+
+## Analysis 
+
+### Calculate summary statistics
+
+```{r}
+nitrate <- mean(bg_chem$NO3)
+nitrite <- mean(bg_chem$NO2)
+amm <- mean(bg_chem$NH4)
+phos <- mean(bg_chem$P)
+```
+
+### Calculate mean Redfield ratio
+
+```{r}
+ratio <- (sum(nitrate + nitrite + amm)/phos)
+```
+
+### Plot Redfield ratio
+
+```{r}
+plot(bg_chem$P, bg_chem$NO3 + bg_chem$NO2 + amm)
+```
+
+## Conclusion
+
+The Redfield ratio for this data is approximately `r round(ratio)`
