@@ -1,0 +1,66 @@
+---
+title: "data-visualization"
+author: "ka"
+format: html
+editor: visual
+---
+
+```{r}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(forcats) # makes working with factors easier
+library(ggplot2)
+library(leaflet) # interactive maps
+library(DT) # interactive tables
+library(scales) # scale functions for visualization
+library(janitor) # expedite cleaning and exploring data
+library(viridis) # colorblind friendly color pallet
+```
+
+
+## Read data
+
+```{r}
+data_visits <- read_csv("https://portal.edirepository.org/nis/dataviewer?packageid=edi.587.1&entityid=cda8c1384af0089b506d51ad8507641f") %>%
+janitor::clean_names()
+```
+
+```{r}
+colnames(data_visits)
+```
+
+
+```{r}
+glimpse(data_visits)
+range(data_visits$date)
+
+unique(data_visits$time_of_day)
+```
+
+# Getting data ready
+
+```{r}
+
+visits_long <- data_visits %>% 
+  pivot_longer(cols = c("sm_boat","med_boat","lrg_boat","bank_angler","scientist","cars"),
+               names_to ="visitor_type",
+               values_to ="quantity") %>% 
+  rename(restore_loc = eco_restore_approximate_location) %>% 
+  select(-notes)
+visits_long
+```
+
+## Plotting with 'ggplot2'
+
+```{r}
+ggplot(visits_long,
+       aes(x = restore_loc, y = quantity)) +  
+  geom_col()
+```
+## calculating data visits by visit type
+
+```{r}
+
+```
+
