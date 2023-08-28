@@ -61,6 +61,106 @@ ggplot(visits_long,
 ## calculating data visits by visit type
 
 ```{r}
+daily_visit <- visits_long %>% 
+  group_by(restore_loc, date, visitor_type) %>% 
+  summary(daily_visits = sum(quantity))
+daily_visits
+```
+```{r}
+daily_visits_loc <- visits_long %>%
+    group_by(restore_loc, date, visitor_type) %>% 
+    summarise(daily_visits = sum(quantity))
+    
+head(daily_visits_loc)
+```
+
+
+
+
+## Customizing our plot
+
+```{r}
+ggplot(data = daily_visits_loc,
+       aes(x = restore_loc, y = daily_visits,
+           fill = "blue"))+
+    geom_col()
+```
+
+```{r}
+ggplot(data = daily_visits_loc,
+       aes(x = restore_loc, y = daily_visits,
+           fill = visitor_type))+
+    geom_col()
+
 
 ```
+
+
+```{r}
+ggplot(data = daily_visits_loc,
+       aes(x = restore_loc, y = daily_visits,
+           fill = visitor_type))+
+    geom_col()+
+    labs(x = "Restoration Location",
+         y = "Number of Visits",
+         fill = "Type of Visitor",
+         title = "Total Number of Visits to Delta Restoration Areas by visitor type",
+         subtitle = "Sum of all visits during July 2017 and March 2018")+
+    coord_flip()+
+    theme_bw()
+
+```
+
+
+## using 'theme()' function to further customize our plot
+
+```{r}
+ggplot(data = daily_visits_loc,
+       aes(x = restore_loc, y = daily_visits,
+           fill = visitor_type))+
+    geom_col()+
+    labs(x = "Restoration Location",
+         y = "Number of Visits",
+         fill = "Type of Visitor",
+         title = "Total Number of Visits to Delta Restoration Areas by visitor type",
+         subtitle = "Sum of all visits during July 2017 and March 2018")+
+    coord_flip()+
+    theme_bw()+
+    theme(legend.position = "bottom",
+          axis.ticks.y = element_blank()) ## note we mention y-axis here
+```
+
+```{r}
+my_theme <- theme_bw(base_size = 16) +
+    theme(legend.position = "bottom",
+          axis.ticks.y = element_blank())
+```
+
+
+```{r}
+ggplot(data = daily_visits_loc,
+       aes(x = restore_loc, y = daily_visits,
+           fill = visitor_type))+
+    geom_col()+
+    labs(x = "Restoration Location",
+         y = "Number of Visits",
+         fill = "Type of Visitor",
+         title = "Total Number of Visits to Delta Restoration Areas by visitor type",
+         subtitle = "Sum of all visits during July 2017 and March 2018")+
+    coord_flip()+
+    my_theme+
+    scale_y_continuous(breaks =seq(0,120,20))
+```
+
+
+
+
+
+
+
+## saving theme into an opbject
+
+
+
+
 
