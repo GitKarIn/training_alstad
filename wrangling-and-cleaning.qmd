@@ -1,0 +1,194 @@
+---
+title: "wrangling-and-cleaning.qmd"
+format: html
+editor: visual
+---
+
+## Load Libraries
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(readr)
+
+```
+
+## Load Data
+
+bit.ly/data-wrangle-lesson-data
+
+```{r}
+
+catch_original <- read_csv("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.30.1")
+```
+
+```{r}
+colnames(catch_original)
+```
+
+```{r}
+head(catch_original)
+```
+
+```{r}
+summary(catch_original)
+```
+
+```{r}
+unique(catch_original$Region)
+```
+
+```{r}
+#View(catch_original)
+```
+
+```{r}
+# %>% %>% %>% %>% ctl + shift + m %>% 
+```
+
+## Pipe Operator
+
+## Select Columns
+
+GOAL: remove 'All' and 'notersRedCode' columns
+
+```{r}
+catch_data <- catch_original %>% 
+  select("Region","Year","Chinook","Sockeye","Coho","Pink","Chum")
+```
+
+## Quality Check
+
+```{r}
+dplyr::glimpse(catch_data)
+```
+
+## 
+
+## Change column content
+
+Goals: convert the Chinook values to numeric and overwrite
+
+```{r}
+catch_clean <- catch_data %>% 
+  mutate(Chinook = as.numeric(Chinook))
+```
+
+## Find the row with the 'NA' value
+
+Compare nested code versus piped code
+
+```{r}
+#which(is.na(catch_clean$Chinook))
+catch_clean$Chinook %>% 
+  is.na %>%  
+  which()
+
+```
+
+Goal: change the value of the 'Chinook column to 1 if the value is equal to the letter I.
+
+```{r}
+catch_clean <- catch_data %>% 
+  mutate(Chinook = if_else(condition = Chinook == "I",
+                            true = "1",
+                            false = Chinook))
+
+catch_clean <- catch_clean %>%
+  mutate(Chinook = as.numeric(Chinook))
+```
+
+```{r}
+dplyr::glimpse(catch_clean)
+
+```
+
+
+Goal: transform dta from wide format to a long format
+
+
+```{r}
+catch_long <- catch_clean %>% 
+  pivot_longer(
+    cols = -c(Region, Year),
+    names_to = "species",
+          values_to = "catch"
+          )
+
+catch_long %>% 
+  pivot_wider(names_from = species,
+              values_from = catch)
+  
+```
+
+## Renaming columns
+
+Goal: rename the 'catch' comn to be 
+
+```{r}
+catch_long <- catch_long %>% 
+  rename(catch_thousands = catch)
+
+
+```
+
+
+Goal: change units
+
+```{r}
+catch_long <- catch_long %>% 
+  mutate(catch = catch_thousands * 1000)
+```
+
+Goal: remove catch_thousands
+
+```{r}
+catch_long <- catch_long %>% 
+  select(-catch_thousands)
+```
+
+```{r}
+head(catch_long)
+```
+
+## Summary Statistics
+
+Goal: exercises
+
+```{r}
+#catch_long %>% filter(catch > 10000000)
+catch_long %>% filter(Region == "SSE", species =="Chinook")
+```
+
+## Separate and Unite
+
+```{r}
+## create `cities_df`
+cities_df <- data.frame(city = c("Juneau AK",
+                                 "Sitka AK",
+                                 "Anchorage AK"))
+
+
+cit_st <- cities_df %>%  separate(city,c("city","state")," ")
+cit_st
+
+citst <- cit_st %>%  unite(city,state, sep = "-")
+citst
+```
+```{r}
+dates_df <- data.frame(
+    year = c("1930",
+             "1930",
+             "1930"),
+    month = c("12",
+              "12",
+              "12"),
+    day = c("14",
+            "15",
+            "16")
+)
+
+dates_df %>%
+    unite(date, year, month, day, sep = "-")
+```
+
