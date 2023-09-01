@@ -1,0 +1,52 @@
+---
+title: "Census Data"
+format: html
+---
+
+# Census key
+# aa615a4e571f726357012f4d2e547231ba6727bc
+
+```{r}
+library(tidycensus)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+
+```{r}
+#census_api_key("aa615a4e571f726357012f4d2e547231ba6727bc", install = TRUE)
+```
+
+```{r}
+pop_2020 <- get_decennial(
+    geography = "state",
+    variable = "P1_001N",
+    year = 2020)
+```
+```{r}
+pop_2010 <- get_decennial(
+  geography = "state", 
+  variables = "P001001",
+  year = 2010)
+```
+
+```{r}
+table_p2_2020 <- get_decennial(
+    geography = "state",
+    table = "P2",
+    year = 2020)
+```
+```{r}
+unique(table_p2_2020$variable)
+```
+
+## how to know what the variables are: use load_variable function
+
+```{r}
+vars_pl_2020 <-  load_variables(2020, "pl")
+
+## for 20210
+vars_pl_2010 <-  load_variables(2010, "pl")
+```
+
