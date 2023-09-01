@@ -1,0 +1,139 @@
+---
+title: "test_analysis"
+format: html
+---
+
+## libraries
+
+```{r}
+library(gutenbergr) # access public domain texts from Project Gutenberg
+library(tidytext) # text mining using tidy tools
+library(dplyr) # wrangle data
+library(ggplot2) # plot data
+```
+
+
+```{r}
+# Group B
+gutenberg_works(title == "Frankenstein; Or, The Modern Prometheus") # frankenstein text
+
+```
+```{r}
+Franken_corp <- gutenberg_download(41445)
+```
+
+```{r}
+Franken_corp_u <- Franken_corp %>% 
+  unnest_tokens(word,text)
+  
+```
+
+
+```{r}
+Franken_corp_a <-  Franken_corp_u  %>% 
+  dplyr::anti_join(stop_words, by = "word")
+```
+
+```{r}
+# calculate top 10 most frequent words
+count_Frank <- Franken_corp_a %>%
+    count(word) %>% 
+    slice_max(n = 10, order_by = n)
+count_Frank
+```
+
+
+```{r}
+# bar plot
+ggplot(data = count_Frank, aes(n, reorder(word, n))) +
+  geom_col() +
+    labs(x = "Count",
+         y = "Token")
+```
+
+```{r}
+install.packages("wordcloud")
+library(wordcloud)
+```
+```{r}
+set.seed(1234) # for reproducibility 
+wordcloud(words = count_Frank$word, freq = count_Frank$n, min.freq = 1,           
+          max.words=200, random.order=FALSE, rot.per=0.35,            
+          colors=brewer.pal(8, "Dark2"))
+```
+
+
+## Libraries 
+
+
+```{r}
+library(tidytext) # tidy text tools
+library(quanteda) # create a corpus
+library(pdftools) # read in data
+library(dplyr) # wrangle data
+library(stringr) # string manipulation
+library(ggplot2) # plots
+library(wordcloud)
+```
+
+##  Read in data
+
+```{r}
+# ch 4
+path_df <- "data/DSP_chpt4.pdf"
+dp_ch4 <- pdftools::pdf_text(path_df)
+```
+
+
+```{r}
+corpus_dp_ch4 <- quanteda::corpus(dp_ch4)
+```
+
+
+## Make corpus tidy
+
+```{r}
+tidy_dp_ch4 <- tidytext::tidy(corpus_dp_ch4)
+```
+
+
+
+```{r}
+unnest_dp_ch4 <- tidy_dp_ch4 %>% 
+    unnest_tokens(output = word,
+                  input = text) 
+```
+
+
+
+```{r}
+words_dp_ch4 <- unnest_dp_ch4 %>% 
+    dplyr::anti_join(stop_words)
+```
+
+
+```{r}
+count_dp_ch4 <- words_dp_ch4 %>%
+    count(word) %>%
+    slice_max(n = 10, order_by = n)
+```
+
+
+```{r}
+# bar plot
+ggplot(count_dp_ch4, aes(x = reorder(word, n), y = n)) +
+    geom_col() +
+    coord_flip() +
+    labs(title = "Top 10 Most Frequently Occurring Words in Chapter 8 of the Delta Plan",
+         x = NULL,
+         y = "count") +
+    theme_minimal()
+```
+
+```{r}
+set.seed(1234) # for reproducibility 
+wordcloud(words = count_dp_ch4$word, freq = count_dp_ch4$n, min.freq = 1,           
+          max.words=200, random.order=FALSE, rot.per=0.35,            
+          colors=brewer.pal(8, "Dark2"))
+```
+
