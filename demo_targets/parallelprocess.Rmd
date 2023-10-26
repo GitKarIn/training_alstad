@@ -1,0 +1,200 @@
+---
+title: "ParallelProcessing"
+output: html_document
+date: "2023-10-25"
+---
+
+```{r}
+library(palmerpenguins)
+library(dplyr)
+library(tidyr)
+
+bill_length <- penguins %>% 
+    select(species, bill_length_mm) %>% 
+    drop_na() %>% 
+    as.data.frame()
+
+head(bill_length)
+```
+
+```{r}
+trials <- 3000
+res <- data.frame()
+system.time({
+  trial <- 1
+  while(trial <= trials) {
+    index <- sample(100, 100, replace=TRUE)
+    result1 <- glm(bill_length[index,1]~bill_length[index,2], family=binomial(logit))
+    r <- coefficients(result1)
+    res <- rbind(res, r)
+    trial <- trial + 1
+  }
+})
+```
+
+
+```{r}
+boot_fx <- function(trial) {
+  index <- sample(100, 100, replace=TRUE)
+  result1 <- glm(bill_length[index,1]~bill_length[index,2], family=binomial(logit))
+  r <- coefficients(result1)
+  res <- rbind(data.frame(), r)
+}
+
+trials <- seq(1, trials)
+system.time({
+  results <- lapply(trials, boot_fx)
+})
+```
+
+## Approaches to parallelization
+
+```{r}
+library(parallel)
+numCores <- detectCores()
+numCores
+```
+
+
+```{r}
+system.time({
+  res_mca <- mclapply(trials, boot_fx, mc.cores = numCores)
+})
+```
+```{r}
+for (i in 1:3) {
+  print(sqrt(i))
+}
+```
+
+```{r}
+library(foreach)
+foreach (i=1:3) %do% {
+  sqrt(i)
+}
+```
+```{r}
+library(foreach)
+library(doParallel)
+
+registerDoParallel(numCores)  # use multicore, set to the number of our cores
+foreach (i=1:3) %dopar% {
+  sqrt(i)
+}
+```
+```{r}
+# To simplify output, foreach has the .combine parameter that can simplify return values
+
+# Return a vector
+foreach (i=1:3, .combine=c) %dopar% {
+  sqrt(i)
+}
+```
+```{r}
+# To simplify output, foreach has the .combine parameter that can simplify return values
+
+# Return a vector
+foreach (i=1:3, .combine=rbind) %dopar% {
+  sqrt(i)
+}
+```
+```{r}
+# Let's use the palmerpenguins data set to do a parallel bootstrap
+# From the doParallel vignette, but slightly modified
+num_trials <- 3000
+system.time({
+  r <- foreach(icount(num_trials), .combine=rbind) %dopar% {
+    ind <- sample(100, 100, replace=TRUE)
+    result1 <- glm(bill_length[ind,1]~bill_length[ind,2], family=binomial(logit))
+    coefficients(result1)
+  }
+})
+```
+
+
+```{r}
+# And compare that to what it takes to do the same analysis in serial
+system.time({
+  r <- foreach(icount(num_trials), .combine=rbind) %do% {
+    ind <- sample(100, 100, replace=TRUE)
+    result1 <- glm(bill_length[ind,1]~bill_length[ind,2], family=binomial(logit))
+    coefficients(result1)
+  }
+})
+```
+
+```{r}
+# When you're done, clean up the cluster
+stopImplicitCluster()
+```
+
+
+## Future and furr
+
+```{r}
+
+library(future)
+plan(multisession)
+f <- future({
+  cat("hello world!\n")
+})
+
+v <- value(f)
+v
+
+```
+
+
+```{r}
+plan(multisession)
+download_data <- function() {
+    # Sleep, and just pretend to go get the data
+    Sys.sleep(0.5)
+    return(c(1,2,3))
+}
+
+run_model <- function(d) {
+    # Sleep, and just pretend to run a complicated model
+    Sys.sleep(0.5)
+    return(42)
+}
+model_result <- future({
+    d <- download_data()
+    result <- run_model(d)
+    result
+})
+
+while(!resolved(model_result)) {
+    cat("Waiting for model task to complete...\n")
+    Sys.sleep(0.2)
+    cat("Do some more work now, like print this message...\n")
+}
+
+value(model_result)
+```
+
+
+```{r}
+library(purrr)
+system.time({
+  res_purrr <- map(trials, boot_fx)
+})
+
+```
+
+
+```{r}
+library(furrr)
+plan(multisession, workers=8)
+system.time({
+  res_furrr <- future_map(trials, boot_fx, .options = furrr_options(seed = TRUE))
+})
+```
+
+
+
+
+
+
+
+

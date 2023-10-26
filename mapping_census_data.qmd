@@ -1,0 +1,96 @@
+---
+title: "mapping census data"
+format: html
+---
+
+ ## load libraries
+ 
+```{r}
+library(tidycensus)
+library(mapview)
+library(ggplot2)
+library(dplyr)
+library(sf)
+```
+ 
+ ## Income in CA by county
+ 
+```{r}
+ca_income <- get_acs(
+  geography = "county",
+  variables ="B19013_001",
+  state = "CA",
+  year = 2021,
+  geometry = TRUE
+  
+)
+```
+```{r}
+plot(ca_income["estimate"])
+  ## Median income in California by county. Defaults to 5-year estimates 2017-2021"
+  median_income_5yr <- get_acs(
+  geography = "county",
+  variables = "B19013_001",
+  state = "CA")
+```
+ 
+```{r}
+mapview(ca_income, zcol = "estimate")
+```
+```{r}
+solano_income <- get_acs(
+    geography = "tract",
+    variables = "B19013_001",
+    state = "CA",
+    county = "Solano",
+    geometry = "TRUE")
+
+head(solano_income)
+```
+ 
+```{r}
+mapview(solano_income, zcol = "estimate")
+```
+ 
+ 
+```{r}
+#this function will load all of the variables in this survey
+variable_acs <- load_variables(2021, "acs5")
+# another resource: census reporter .org
+```
+ 
+ 
+ 
+## Get data: long versus wide format
+
+```{r}
+race_var <- c(
+    Hispanic = "DP05_0071P",
+    White = "DP05_0077P",
+    Black = "DP05_0078P",
+    Asian = "DP05_0080P")
+
+## Default long
+alameda_race <- get_acs(
+  geography = "tract",
+  variables = race_var,
+  state = "CA",
+  county = "Alameda",
+  geometry = TRUE)
+
+head(alameda_race)
+```
+
+```{r}
+alameda_race_wide <- get_acs(
+  geography = "tract",
+  variables = race_var,
+  state = "CA",
+  county = "Alameda",
+  geometry = TRUE,
+  output = "wide")
+
+head(alameda_race_wide)
+```
+ 
+ 
