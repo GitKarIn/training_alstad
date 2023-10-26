@@ -222,6 +222,30 @@ Using the PL 94-171 Redistricting Data Summary File</code></pre>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="do">## for 20210</span></span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>vars_pl_2010 <span class="ot">&lt;-</span>  <span class="fu">load_variables</span>(<span class="dv">2010</span>, <span class="st">"pl"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Vector with race variables codes</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>race_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Hispanic =</span> <span class="st">"P2_002N"</span>,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">White =</span> <span class="st">"P2_005N"</span>,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Black =</span> <span class="st">"P2_006N"</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Native =</span> <span class="st">"P2_007N"</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Asian =</span> <span class="st">"P2_008N"</span>,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">HIPI =</span> <span class="st">"P2_009N"</span>) <span class="do">## Native Hawaiian and other Pacific Islander</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>delta_race <span class="ot">&lt;-</span> <span class="fu">get_decennial</span>(</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">geography =</span> <span class="st">"county"</span>,</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">state =</span> <span class="st">"CA"</span>,</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">county =</span> <span class="fu">c</span>(<span class="st">"Alameda"</span>, <span class="st">"Contra Costa"</span>, <span class="st">"Sacramento"</span>, <span class="st">"San Joaquin"</span>, <span class="st">"Solano"</span>, <span class="st">"Yolo"</span>),</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> race_vars,</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">summary_var =</span> <span class="st">"P2_001N"</span>,</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2020</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Getting data from the 2020 decennial Census</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using the PL 94-171 Redistricting Data Summary File</code></pre>
+</div>
+</div>
 </section>
 </section>
 
