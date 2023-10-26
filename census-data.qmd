@@ -3,6 +3,9 @@ title: "Census Data"
 format: html
 ---
 
+# modify for git practice
+
+
 # Census key
 # aa615a4e571f726357012f4d2e547231ba6727bc
 
@@ -49,4 +52,27 @@ vars_pl_2020 <-  load_variables(2020, "pl")
 ## for 20210
 vars_pl_2010 <-  load_variables(2010, "pl")
 ```
+
+
+
+```{r}
+## Vector with race variables codes
+race_vars <- c(
+  Hispanic = "P2_002N",
+  White = "P2_005N",
+  Black = "P2_006N",
+  Native = "P2_007N",
+  Asian = "P2_008N",
+  HIPI = "P2_009N") ## Native Hawaiian and other Pacific Islander
+
+delta_race <- get_decennial(
+  geography = "county",
+  state = "CA",
+  county = c("Alameda", "Contra Costa", "Sacramento", "San Joaquin", "Solano", "Yolo"),
+  variables = race_vars,
+  summary_var = "P2_001N",
+  year = 2020)
+```
+
+
 
